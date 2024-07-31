@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Cliente</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-footer {
+            background-color: #007bff;
+            border-top: 0;
+            text-align: center;
+        }
+
+        .btn-back, .btn-logout {
+            margin-top: 20px;
+        }
+
+        .btn-back a, .btn-logout a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-back a:hover, .btn-logout a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                Visualizar Cliente
+            </div>
+            <div class="card-body">
+                {% if cliente %}
+                    <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+                    <p><strong>Email:</strong> {{ cliente.email }}</p>
+                    <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+                    <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+                    <p><strong>Data de Criação:</strong> {{ cliente.data_criacao }}</p>
+
+                    {% if cliente.cpf %}
+                        <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+                        <p><strong>RG:</strong> {{ cliente.rg }}</p>
+                        <p><strong>Data de Nascimento:</strong> {{ cliente.data_nascimento }}</p>
+                    {% elif cliente.cnpj %}
+                        <p><strong>CNPJ:</strong> {{ cliente.cnpj }}</p>
+                        <p><strong>Razão Social:</strong> {{ cliente.razao_social }}</p>
+                        <p><strong>Inscrição Estadual:</strong> {{ cliente.inscricao_estadual }}</p>
+                    {% endif %}
+                {% else %}
+                    <p>Cliente não encontrado.</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <div class="btn-back">
+                    <a href="/" class="btn btn-primary">Página Inicial</a>
+                </div>
+                <div class="btn-logout">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Sair da Conta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

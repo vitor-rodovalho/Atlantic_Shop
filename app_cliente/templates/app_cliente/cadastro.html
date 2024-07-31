@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Cliente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function toggleFields() {
+            var tipoCliente = document.getElementById("tipo_cliente").value;
+            var pessoaFisicaFields = document.getElementById("pessoa_fisica_fields");
+            var pessoaJuridicaFields = document.getElementById("pessoa_juridica_fields");
+
+            if (tipoCliente === "fisica") {
+                pessoaFisicaFields.style.display = "block";
+                pessoaJuridicaFields.style.display = "none";
+            } else if (tipoCliente === "juridica") {
+                pessoaFisicaFields.style.display = "none";
+                pessoaJuridicaFields.style.display = "block";
+            } else {
+                pessoaFisicaFields.style.display = "none";
+                pessoaJuridicaFields.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Cadastro</h2>
+
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        
+        <form action="{% url 'cadastro_cliente' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <input type="text" class="form-control" id="endereco" name="endereco" required>
+            </div>
+            <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="text" class="form-control" id="telefone" name="telefone" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="tipo_cliente">Tipo de Cliente</label>
+                <select class="form-control" id="tipo_cliente" name="tipo_cliente" onchange="toggleFields()" required>
+                    <option value="">Selecione...</option>
+                    <option value="fisica">Pessoa Física</option>
+                    <option value="juridica">Pessoa Jurídica</option>
+                </select>
+            </div>
+            <div id="pessoa_fisica_fields" style="display: none;">
+                <div class="form-group">
+                    <label for="cpf">CPF</label>
+                    <input type="text" class="form-control" id="cpf" name="cpf">
+                </div>
+                <div class="form-group">
+                    <label for="rg">RG</label>
+                    <input type="text" class="form-control" id="rg" name="rg">
+                </div>
+                <div class="form-group">
+                    <label for="data_nascimento">Data de Nascimento</label>
+                    <input type="date" class="form-control" id="data_nascimento" name="data_nascimento">
+                </div>
+            </div>
+            <div id="pessoa_juridica_fields" style="display: none;">
+                <div class="form-group">
+                    <label for="cnpj">CNPJ</label>
+                    <input type="text" class="form-control" id="cnpj" name="cnpj">
+                </div>
+                <div class="form-group">
+                    <label for="razao_social">Razão Social</label>
+                    <input type="text" class="form-control" id="razao_social" name="razao_social">
+                </div>
+                <div class="form-group">
+                    <label for="inscricao_estadual">Inscrição Estadual</label>
+                    <input type="text" class="form-control" id="inscricao_estadual" name="inscricao_estadual">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

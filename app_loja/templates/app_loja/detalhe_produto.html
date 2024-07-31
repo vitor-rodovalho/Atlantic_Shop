@@ -1,0 +1,17 @@
+{% extends 'app_loja/base.html' %}
+
+{% block title %}Detalhe do Produto{% endblock %}
+
+{% block content %}
+    <h2>{{ produto.nome }}</h2>
+    <p>{{ produto.descricao }}</p>
+    <p>Preço: {{ produto.preco }}</p>
+    <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" class="form-control" name="quantidade" id="quantidade" value="1">
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
+    </form>
+{% endblock %}

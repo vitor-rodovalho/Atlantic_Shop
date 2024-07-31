@@ -1,0 +1,14 @@
+{% extends 'app_loja/base.html' %}
+
+{% block title %}Lista de Produtos{% endblock %}
+
+{% block content %}
+    <h2>Lista de Produtos</h2>
+    <ul class="list-group">
+        {% for produto in produtos %}
+            <li class="list-group-item">
+                <a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
