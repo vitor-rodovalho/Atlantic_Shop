@@ -1,10 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from . import models
 from django.contrib.auth.decorators import login_required
+import csv
+import os
+from django.conf import settings
+
 
 def lista_produtos(request):
     produtos = models.Produto.objects.all()
-    return render(request, 'app_loja/lista_produtos.html', {'produtos': produtos})
+    return render(request, 'app_loja/lista_app_loja/produtos.html', {'produtos': produtos})
 
 def detalhe_produto(request, id):
     produto = get_object_or_404( models.Produto, id = id)
@@ -29,3 +33,45 @@ def adicionar_ao_carrinho(request, id):
 def ver_carrinho(request):
     pedido =  models.Pedido.objects.filter(cliente = request.user.cliente, status = 'Aberto').first()
     return render(request, 'app_loja/ver_carrinho.html', {'pedido': pedido})
+
+
+
+def carregar_produtos_csv(request):
+    # Caminho para o arquivo CSV
+    csv_file_path = os.path.join(settings.BASE_DIR, '/home/aluno/Área de Trabalho/acsa/Atlantic_Shop/static/', 'dataset-teste.csv')
+
+    if request.method == 'POST':
+        try:
+            # Lemos o conteúdo do CSV
+            with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
+                linhas = csv.reader(csvfile)
+                
+                # Ignora o cabeçalho
+                next(linhas)
+
+                produtos_criados = []
+                for linha in linhas:
+                    # Extraímos os dados de cada linha
+                    title, imgUrl, stars, reviews, price, categoryName = linha
+
+                    # Criamos um novo produto
+                    produto = models.Produto.objects.create(
+                        nome=title,  # Aqui usamos title para nome
+                        imgUrl=imgUrl,
+                        stars=float(stars),  # Convertendo estrelas para float, se necessário
+                        reviews=int(reviews),  # Convertendo reviews para int, se necessário
+                        preco=float(price),  # Convertendo price para float
+                        categoria=categoryName  # Usando categoryName para categoria
+                    )
+                    produtos_criados.append(produto.nome)  # Adiciona o nome do produto à lista
+
+            # Obtemos todos os produtos para exibir na tela
+            produtos = models.Produto.objects.all()
+            return render(request, 'app_loja/produtos.html', {'produtos': produtos, 'produtos_criados': produtos_criados})
+
+        except FileNotFoundError:
+            return render(request, 'app_loja/produtos.html', {'error': 'Arquivo CSV não encontrado.'})
+        except Exception as e:
+            return render(request, 'app_loja/produtos.html', {'error': str(e)})
+    
+    return render(request, 'app_loja/produtos.html', {'error': 'Método não permitido.'})

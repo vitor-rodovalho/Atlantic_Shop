@@ -8,9 +8,11 @@ from app_cliente.models import Cliente
 class Produto(models.Model):
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100)
-    descricao = models.TextField()
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
-    estoque = models.IntegerField()
+    imgUrl = models.URLField(max_length=200, default='')  # URL da imagem
+    stars = models.FloatField(default=0)  # Avaliação em estrelas
+    reviews = models.IntegerField(default=0)  # Número de avaliações
+    preco = models.FloatField()  # Preço do produto
+    categoria = models.CharField(max_length=100, default='None')  # Nome da categoria
 
     def __str__(self):
         return self.nome
