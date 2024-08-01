@@ -1,10 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Cliente</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            margin-bottom: 50px;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            border-bottom: 0;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+    </style>
     <script>
         function toggleFields() {
             var tipoCliente = document.getElementById("tipo_cliente").value;
@@ -24,80 +62,124 @@
         }
     </script>
 </head>
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Cadastro</h2>
 
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Atlantic Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'visualizar_cliente' %}">Cliente</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ver_carrinho' %}">Carrinho</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="form-inline my-2 my-lg-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sair</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-success my-2 my-sm-0" href="{% url 'login' %}">Entrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary my-2 my-sm-0" href="{% url 'cadastro_cliente' %}">Cadastrar</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                Cadastro de Cliente
             </div>
-        {% endif %}
-        
-        <form action="{% url 'cadastro_cliente' %}" method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="nome">Nome</label>
-                <input type="text" class="form-control" id="nome" name="nome" required>
+            <div class="card-body">
+                {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+                
+                <form action="{% url 'cadastro_cliente' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="text" class="form-control" id="telefone" name="telefone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_cliente">Tipo de Cliente</label>
+                        <select class="form-control" id="tipo_cliente" name="tipo_cliente" onchange="toggleFields()" required>
+                            <option value="">Selecione...</option>
+                            <option value="fisica">Pessoa Física</option>
+                            <option value="juridica">Pessoa Jurídica</option>
+                        </select>
+                    </div>
+                    <div id="pessoa_fisica_fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" class="form-control" id="cpf" name="cpf">
+                        </div>
+                        <div class="form-group">
+                            <label for="rg">RG</label>
+                            <input type="text" class="form-control" id="rg" name="rg">
+                        </div>
+                        <div class="form-group">
+                            <label for="data_nascimento">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="data_nascimento" name="data_nascimento">
+                        </div>
+                    </div>
+                    <div id="pessoa_juridica_fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ</label>
+                            <input type="text" class="form-control" id="cnpj" name="cnpj">
+                        </div>
+                        <div class="form-group">
+                            <label for="razao_social">Razão Social</label>
+                            <input type="text" class="form-control" id="razao_social" name="razao_social">
+                        </div>
+                        <div class="form-group">
+                            <label for="inscricao_estadual">Inscrição Estadual</label>
+                            <input type="text" class="form-control" id="inscricao_estadual" name="inscricao_estadual">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="endereco">Endereço</label>
-                <input type="text" class="form-control" id="endereco" name="endereco" required>
-            </div>
-            <div class="form-group">
-                <label for="telefone">Telefone</label>
-                <input type="text" class="form-control" id="telefone" name="telefone" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="tipo_cliente">Tipo de Cliente</label>
-                <select class="form-control" id="tipo_cliente" name="tipo_cliente" onchange="toggleFields()" required>
-                    <option value="">Selecione...</option>
-                    <option value="fisica">Pessoa Física</option>
-                    <option value="juridica">Pessoa Jurídica</option>
-                </select>
-            </div>
-            <div id="pessoa_fisica_fields" style="display: none;">
-                <div class="form-group">
-                    <label for="cpf">CPF</label>
-                    <input type="text" class="form-control" id="cpf" name="cpf">
-                </div>
-                <div class="form-group">
-                    <label for="rg">RG</label>
-                    <input type="text" class="form-control" id="rg" name="rg">
-                </div>
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento</label>
-                    <input type="date" class="form-control" id="data_nascimento" name="data_nascimento">
-                </div>
-            </div>
-            <div id="pessoa_juridica_fields" style="display: none;">
-                <div class="form-group">
-                    <label for="cnpj">CNPJ</label>
-                    <input type="text" class="form-control" id="cnpj" name="cnpj">
-                </div>
-                <div class="form-group">
-                    <label for="razao_social">Razão Social</label>
-                    <input type="text" class="form-control" id="razao_social" name="razao_social">
-                </div>
-                <div class="form-group">
-                    <label for="inscricao_estadual">Inscrição Estadual</label>
-                    <input type="text" class="form-control" id="inscricao_estadual" name="inscricao_estadual">
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
-        </form>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

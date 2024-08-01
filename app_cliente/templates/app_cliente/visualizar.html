@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizar Cliente</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         body {
             background-color: #f8f9fa;
@@ -17,7 +18,7 @@
         }
 
         .card {
-            border-radius: 10px;
+            border-radius: 0.5rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -27,7 +28,7 @@
             font-size: 1.5rem;
             text-align: center;
             border-bottom: 0;
-            border-radius: 10px 10px 0 0;
+            border-radius: 0.5rem 0.5rem 0 0;
         }
 
         .card-body {
@@ -56,8 +57,45 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Atlantic Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'visualizar_cliente' %}">Cliente</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ver_carrinho' %}">Carrinho</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="form-inline my-2 my-lg-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sair</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-success my-2 my-sm-0" href="{% url 'login' %}">Entrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary my-2 my-sm-0" href="{% url 'cadastro_cliente' %}">Cadastrar</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="card">
+        <div class="card mt-4">
             <div class="card-header">
                 Visualizar Cliente
             </div>
@@ -86,7 +124,7 @@
                 <div class="btn-back">
                     <a href="/" class="btn btn-primary">Página Inicial</a>
                 </div>
-                <div class="btn-logout">
+                <div class="btn-logout mt-2">
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Sair da Conta</button>
@@ -95,8 +133,10 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>

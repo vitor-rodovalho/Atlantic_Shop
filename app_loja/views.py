@@ -25,7 +25,7 @@ def lista_categorias(request):
         'categorias': categorias
     }
     
-    return render(request, 'lista_categorias.html', context)
+    return render(request, 'app_loja/lista_categorias.html', context)
 
 
 def lista_produtos(request):
@@ -105,3 +105,40 @@ def finalizar_compra(request):
     #         return render(request, 'app_loja/produtos.html', {'error': str(e)})
     
     # return render(request, 'app_loja/produtos.html', {'error': 'Método não permitido.'})
+
+
+
+# Script de carregamento de CSV para popular o banco de dados:
+# import csv
+# from app_loja.models import Produto
+
+# def carregar_csv():
+#     with open('path/to/seu_arquivo.csv', 'r') as file:
+#         reader = csv.reader(file)
+#         next(reader)  # Skip the header row
+#         for row in reader:
+#             Produto.objects.create(
+#                 nome=row[0],
+#                 preco=row[1],
+#                 categoria=row[2],
+#                 subcategoria=row[3],
+#                 descricao=row[4],
+#                 imagem=row[5]
+#             )
+
+
+# View pra exibir categorias e produtos aleatorios filtrados
+# from django.shortcuts import render
+# from .models import Produto
+# import random
+
+# def lista_categorias(request):
+#     return render(request, 'app_loja/lista_categorias.html')
+
+# def lista_produtos(request, categoria):
+#     produtos = Produto.objects.filter(categoria=categoria)
+#     if produtos.exists():
+#         produtos_aleatorios = random.sample(list(produtos), 5)  # Seleciona 5 produtos aleatórios
+#     else:
+#         produtos_aleatorios = []
+#     return render(request, 'app_loja/lista_produtos.html', {'produtos': produtos_aleatorios, 'categoria': categoria})

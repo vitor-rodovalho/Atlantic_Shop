@@ -1,32 +1,6 @@
-{% load static %}
+{% extends 'app_loja/base.html' %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Atlantic Shop{% endblock %}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <style>
-        /* Navbar */
-        .navbar-nav .nav-link {
-            margin-right: 20px;
-        }
-        .navbar-brand {
-            margin-right: 50px;
-        }
-        .navbar-nav .form-inline {
-            margin-top: 0.5rem;
-        }
-
-        /* Barra de Pesquisa */
-        .search-bar {
-            display: none; /* Escondido na barra de navegação para o layout atual */
-        }
-    </style>
-</head>
-<body>
+{% block content %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <a class="navbar-brand" href="/">Atlantic Shop</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,15 +11,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
                 </li>
-                <li class="nav-item">
-                
             </ul>
-            <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'lista_produtos' %}">
-                <input class="form-control mr-sm-2" type="search" name="q" placeholder="Pesquisar produtos..." aria-label="Pesquisar">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">
-                    <i class="bi bi-search"></i> Pesquisar
-                </button>
-            </form>
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -72,13 +38,21 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        {% block content %}
-        {% endblock %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Produtos em {{ categoria }}</h2>
+        <div class="row mb-5">
+            {% for produto in produtos %}
+                <div class="col-md-4">
+                    <div class="card product-card mb-4 shadow-lg">
+                        <img src="{{ produto.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ produto.nome }}</h5>
+                            <p class="card-text">{{ produto.descricao }}</p>
+                            <p class="card-text">Preço: {{ produto.preco }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% endblock %}
