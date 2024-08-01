@@ -27,5 +27,14 @@ def adicionar_ao_carrinho(request, id):
 
 @login_required
 def ver_carrinho(request):
-    pedido =  models.Pedido.objects.filter(cliente = request.user.cliente, status = 'Aberto').first()
+    pedido = models.Pedido.objects.filter(cliente=request.user.cliente, status='Aberto').first()
     return render(request, 'app_loja/ver_carrinho.html', {'pedido': pedido})
+
+@login_required
+def finalizar_compra(request):
+    pedido = models.Pedido.objects.filter(cliente=request.user.cliente, status='Aberto').first()
+    if pedido:
+        return redirect('processar_pagamento', pedido_id=pedido.id)  # Redirecionar para a view processar_pagamento com pedido_id
+    else:
+        return redirect('ver_carrinho')
+

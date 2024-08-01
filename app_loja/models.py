@@ -39,3 +39,8 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido {self.id} de {self.cliente.nome}"
+    
+    def finalizar(self):
+        self.status = 'Concluído'
+        self.save()
+        

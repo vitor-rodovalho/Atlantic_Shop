@@ -13,6 +13,7 @@
             {% endfor %}
         </ul>
         <p>Total: {{ pedido.calcular_total }}</p>
+        <a href="{% url 'processar_pagamento' pedido.id %}" class="btn btn-success">Finalizar Compra</a>
     {% else %}
         <p>Seu carrinho está vazio.</p>
     {% endif %}
