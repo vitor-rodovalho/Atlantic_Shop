@@ -4,7 +4,7 @@
 
 {% block content %}
     <h2>{{ produto.nome }}</h2>
-    <p>{{ produto.descricao }}</p>
+    <p><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></p>
     <p>Preço: {{ produto.preco }}</p>
     <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}">
         {% csrf_token %}

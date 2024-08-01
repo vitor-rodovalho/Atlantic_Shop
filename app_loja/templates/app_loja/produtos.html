@@ -14,7 +14,6 @@
             <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
-        {% if produtos %}
             <h3 class="mt-5">Lista de Produtos:</h3>
             <table class="table table-bordered mt-3">
                 <thead>
@@ -30,7 +29,7 @@
                 <tbody>
                     {% for produto in produtos %}
                         <tr>
-                            <td>{{ produto.nome }}</td>
+                            <td><a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a></td>
                             <td><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></td>
                             <td>{{ produto.stars }}</td>
                             <td>{{ produto.reviews }}</td>
@@ -40,16 +39,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p>Não há produtos para exibir.</p>
-        {% endif %}
-
-        {% if produtos_criados %}
-            <div class="alert alert-success mt-3">
-                Produtos carregados com sucesso: {{ produtos_criados|join:", " }}.
-            </div>
-        {% endif %}
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
