@@ -10,7 +10,7 @@ class Produto(models.Model):
     nome = models.CharField(max_length=100)
     imgUrl = models.URLField(max_length=200, default='')  # URL da imagem
     preco = models.FloatField()  
-    categoria = models.CharField(max_length=100, default='None') 
+    subcategoria = models.CharField(max_length=100, default = None) 
 
     def __str__(self):
         return self.nome
