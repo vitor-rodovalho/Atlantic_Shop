@@ -1,0 +1,25 @@
+{% extends 'app_loja/base.html' %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .categoria {
+        margin: 10px 0;
+    }
+</style>
+
+{% block title %}Lista de Produtos{% endblock %}
+
+{% block content %}
+    <h2>Categorias de Produtos</h2>
+    <ul class="list-group">
+        <!-- {% for produto in produtos %}
+            <li class="list-group-item">
+                <a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a>
+            </li>
+        {% endfor %} -->
+        {% for categoria in categorias %}
+            <div class="categoria">{{ categoria }}</div>
+        {% endfor %}
+    </ul>
+{% endblock %}
