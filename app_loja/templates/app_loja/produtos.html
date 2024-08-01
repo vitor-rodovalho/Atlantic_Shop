@@ -14,8 +14,6 @@
                 <tr>
                     <th>Nome</th>
                     <th>Imagem</th>
-                    <th>Avaliações</th>
-                    <th>Número de Avaliações</th>
                     <th>Preço</th>
                     <th>Categoria</th>
                 </tr>
@@ -25,8 +23,6 @@
                     <tr>
                         <td><a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a></td>
                         <td><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></td>
-                        <td>{{ produto.stars }}</td>
-                        <td>{{ produto.reviews }}</td>
                         <td>R$ {{ produto.preco }}</td>
                         <td>{{ produto.categoria }}</td>
                     </tr>

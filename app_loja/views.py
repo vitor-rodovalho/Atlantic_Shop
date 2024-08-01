@@ -82,14 +82,12 @@ def finalizar_compra(request):
             #     produtos_criados = []
             #     for linha in linhas:
             #         # Extraímos os dados de cada linha
-            #         title, imgUrl, stars, reviews, price, categoryName = linha
+            #         title, imgUrl, price, categoryName = linha
 
             #         # Criamos um novo produto
             #         produto = models.Produto.objects.create(
             #             nome=title,  # Aqui usamos title para nome
             #             imgUrl=imgUrl,
-            #             stars=float(stars),  # Convertendo estrelas para float, se necessário
-            #             reviews=int(reviews),  # Convertendo reviews para int, se necessário
             #             preco=float(price),  # Convertendo price para float
             #             categoria=categoryName  # Usando categoryName para categoria
             #         )
