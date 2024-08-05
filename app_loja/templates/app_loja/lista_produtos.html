@@ -1,0 +1,33 @@
+{% extends 'app_loja/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Produtos Carregados</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <h3 class="mt-5">Lista de Produtos:</h3>
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Imagem</th>
+                    <th>Preço</th>
+                    <th>Subcategoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                    <tr>
+                        <td><a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a></td>
+                        <td><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></td>
+                        <td>R$ {{ produto.preco|floatformat:2 }}</td>
+                        <td>{{ produto.subcategoria }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

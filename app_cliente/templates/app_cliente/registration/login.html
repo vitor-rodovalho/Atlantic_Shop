@@ -5,35 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Atlantic Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'visualizar_cliente' %}">Cliente</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ver_carrinho' %}">Carrinho</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="form-inline my-2 my-lg-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sair</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-success my-2 my-sm-0" href="{% url 'login' %}">Entrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary my-2 my-sm-0" href="{% url 'cadastro_cliente' %}">Cadastrar</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
     <div class="container mt-5">
-        <h1 class="mb-4">Login</h1>
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                <p>Erro! Por favor, tente novamente.</p>
-                <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-                </ul>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <h1 class="card-title text-center mb-4">Login</h1>
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <p>Erro! Por favor, tente novamente.</p>
+                            <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_username">E-mail</label>
+                            <input type="text" class="form-control" id="id_username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_password">Senha</label>
+                            <input type="password" class="form-control" id="id_password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+                    </form>
+                    <a href="/cliente/cadastro/" class="btn btn-link mt-4 d-block text-center">Cadastre-se</a>
+                </div>
             </div>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">E-mail</label>
-                <input type="text" class="form-control" id="id_username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="id_password">Senha</label>
-                <input type="password" class="form-control" id="id_password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Entrar</button>
-        </form>
-        <a href="/cliente/cadastro/" class="btn btn-link mt-4">Cadastre-se</a>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

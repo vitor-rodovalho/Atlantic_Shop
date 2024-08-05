@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),   # localhost:8000/admin
     path('', include('app_loja.urls')),  # localhost:8000
     path('cliente/', include('app_cliente.urls')),   # localhost:8000/cliente
+    path('pagamento/', include('app_pagamento.urls')),   # localhost:8000/pagamento
 ]

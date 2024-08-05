@@ -8,11 +8,12 @@
         <ul class="list-group">
             {% for item in pedido.itens.all %}
                 <li class="list-group-item">
-                    {{ item.produto.nome }} - {{ item.quantidade }} x {{ item.preco_unitario }}
+                    {{ item.produto.nome }} - {{ item.quantidade }} x {{ item.preco_unitario|floatformat:2 }}
                 </li>
             {% endfor %}
         </ul>
-        <p>Total: {{ pedido.calcular_total }}</p>
+        <p>Total: {{ pedido.calcular_total|floatformat:2 }}</p>
+        <a href="{% url 'processar_pagamento' pedido.id %}" class="btn btn-success">Finalizar Compra</a>
     {% else %}
         <p>Seu carrinho está vazio.</p>
     {% endif %}

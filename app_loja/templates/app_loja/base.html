@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,24 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Atlantic Shop{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
+        /* Navbar */
         .navbar-nav .nav-link {
-            margin-right: 20px; /* Espaço entre os itens */
+            margin-right: 20px;
         }
         .navbar-brand {
-            margin-right: 50px; /* Espaço após o título da loja */
+            margin-right: 50px;
+        }
+        .navbar-nav .form-inline {
+            margin-top: 0.5rem;
+        }
+
+        /* Barra de Pesquisa */
+        .search-bar {
+            display: none; /* Escondido na barra de navegação para o layout atual */
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <a class="navbar-brand" href="/">Atlantic Shop</a>
-        <div class="collapse navbar-collapse">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
                 </li>
+                <li class="nav-item">
+                
             </ul>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'resultado_produto' %}">
+                <input class="form-control mr-sm-2" type="search" name="query" placeholder="Pesquisar produtos..." aria-label="Pesquisar">
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">
+                    <i class="bi bi-search"></i> Pesquisar
+                </button>
+            </form>
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
