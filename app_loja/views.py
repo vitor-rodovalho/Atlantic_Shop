@@ -7,6 +7,11 @@ import vertexai
 import sqlite3
 from app_loja.models import Produto
 
+CAMINHO_DB = ''
+PROJECT_ID = ''
+LOCATION = ''
+MODEL_ID = ''
+
 produtos_cache = []
 
 def lista_categorias(request):
@@ -64,7 +69,7 @@ def finalizar_compra(request):
     
 
 def busca_produtos_db():
-    db_nome = 'C:\\Users\\vitor\\OneDrive\\Área de Trabalho\\Atlantic_Shop\\db.sqlite3'
+    db_nome = CAMINHO_DB
     conexao_db = sqlite3.connect(db_nome)
 
     global produtos_cache
@@ -86,11 +91,7 @@ def busca_produtos_db():
     return produtos_cache
 
 def generate(input_usuario: str):
-    # Inicializando o cliente do Vertex AI
-    project_id = "atlantic-shop-431022"
-    location = "us-central1"  
-    model_id = "gemini-1.5-flash-001"  
-
+    
     generation_config = {
         "max_output_tokens": 35,
         "temperature": 1,
@@ -107,10 +108,10 @@ def generate(input_usuario: str):
     Exemplo de busca: {input_usuario}"""
 
     # Inicializa o cliente do Vertex AI
-    vertexai.init(project=project_id, location=location)
+    vertexai.init(project=PROJECT_ID, location=LOCATION)
     
     # Cria uma instância do modelo
-    model = GenerativeModel(model_id)
+    model = GenerativeModel(MODEL_ID)
     
     # Gera o conteúdo com o modelo
     resposta = model.generate_content(
