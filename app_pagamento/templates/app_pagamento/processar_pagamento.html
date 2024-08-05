@@ -47,7 +47,7 @@
     <div class="container mt-5">
         <h1>Processar Pagamento</h1>
         <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
-        <p><strong>Total do Pedido:</strong> {{ pedido.calcular_total }}</p>
+        <p><strong>Total do Pedido:</strong> {{ pedido.calcular_total|floatformat:2 }}</p>
 
         <form method="post" action="{% url 'processar_pagamento' pedido.id %}">
             {% csrf_token %}

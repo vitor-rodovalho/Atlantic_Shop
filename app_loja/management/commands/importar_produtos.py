@@ -20,6 +20,6 @@ class Command(BaseCommand):
                     nome=row['title'],
                     imgUrl=row['imgUrl'],
                     preco=row['price'],
-                    categoria=row['categoryName']
+                    subcategoria=row['categoryName']
                 )
                 

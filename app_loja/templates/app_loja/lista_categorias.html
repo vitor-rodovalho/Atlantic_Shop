@@ -2,21 +2,19 @@
 
 {% load static %}
 
-{% block title %}Lista de Produtos{% endblock %}
+{% block title %}Atlantic Shop{% endblock %}
 
 {% block content %}
-<!-- Barra de Pesquisa -->
-<div class="search-bar py-3">
-    <div class="container">
-        <form method="GET" action="{% url 'lista_produtos' %}">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Pesquisar produtos..." aria-label="Pesquisar produtos">
-                <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-search"></i> Pesquisar
-                </button>
-            </div>
-        </form>
-    </div>
+
+<!-- Exibição das Mensagens -->
+<div class="container mt-3">
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>
 
 <div class="container mt-5">
