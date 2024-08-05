@@ -2,142 +2,182 @@
 
 {% load static %}
 
-{% block title %}Atlantic Shop{% endblock %}
+{% block title %}Lista de Produtos{% endblock %}
 
 {% block content %}
-
-<!-- Exibição das Mensagens -->
-<div class="container mt-3">
-    {% if messages %}
-        <div class="alert alert-info">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="{% static 'images/carousel1.jpg' %}" class="d-block w-100" alt="...">
         </div>
-    {% endif %}
+        <div class="carousel-item">
+            <img src="{% static 'images/carousel2.jpg' %}" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/carousel3.jpg' %}" class="d-block w-100" alt="...">
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
 </div>
 
-<div class="container mt-5">
-    <h2 class="mb-4">Categorias</h2>
-    <div class="row mb-5">
+<div class="container mt-5 text-center">
+    <h2 class="mb-4 section-title">Categorias</h2>
+    <div class="row mb-5 justify-content-center">
+        
         <!-- Categoria: Acessórios e Artigos -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='acessorios-e-artigos' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/acessorios_artigos.jpg' %}" class="card-img-top" alt="Acessórios e Artigos">
                 <div class="card-body text-center">
                     <h5 class="card-title">Acessórios e Artigos</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Moda e Acessórios Pessoais -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='moda-e-acessorios-pessoais' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/moda_acessorios_pessoais.jpg' %}" class="card-img-top" alt="Moda e Acessórios Pessoais">  
                 <div class="card-body text-center">
                     <h5 class="card-title">Moda e Acessórios Pessoais</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Bebês e Crianças -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='bebes-e-criancas' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/bebes_criancas.jpg' %}" class="card-img-top" alt="Bebês e Crianças">
                 <div class="card-body text-center">
                     <h5 class="card-title">Bebês e Crianças</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Alimentos e Bebidas -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='alimentos-e-bebidas' %}">
             <div class="card category-card mb-4 shadow-lg">
-                <img src="{% static 'images/alimentos_bebidas.jpg' %}" class="card-img-top" alt="Alimentos e Bebidas">
+                <img src="{% static 'images/alimentos.jpg' %}" class="card-img-top" alt="Alimentos e Bebidas">
                 <div class="card-body text-center">
                     <h5 class="card-title">Alimentos e Bebidas</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Casa e Cozinha -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='casa-e-cozinha' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/casa_cozinha.jpg' %}" class="card-img-top" alt="Casa e Cozinha">
                 <div class="card-body text-center">
                     <h5 class="card-title">Casa e Cozinha</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Ferramentas e Equipamentos -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='ferramentas-e-equipamentos' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/ferramentas_equipamentos.jpg' %}" class="card-img-top" alt="Ferramentas e Equipamentos">
                 <div class="card-body text-center">
                     <h5 class="card-title">Ferramentas e Equipamentos</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Esporte e Lazer -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='esporte-e-lazer' %}">
             <div class="card category-card mb-4 shadow-lg">
-                <img src="{% static 'images/esporte_lazer.jpg' %}" class="card-img-top" alt="Esporte e Lazer">
+                <img src="{% static 'images/esportes.jpg' %}" class="card-img-top" alt="Esporte e Lazer">
                 <div class="card-body text-center">
                     <h5 class="card-title">Esporte e Lazer</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Eletrônicos e Tecnologia -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='eletronicos-e-tecnologia' %}">
             <div class="card category-card mb-4 shadow-lg">
-                <img src="{% static 'images/eletronicos_tecnologia.jpg' %}" class="card-img-top" alt="Eletrônicos e Tecnologia">
+                <img src="{% static 'images/eletrodomesticos.jpg' %}" class="card-img-top" alt="Eletrônicos e Tecnologia">
                 <div class="card-body text-center">
                     <h5 class="card-title">Eletrônicos e Tecnologia</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Livros e Mídia -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='livros-e-midia' %}">
             <div class="card category-card mb-4 shadow-lg">
-                <img src="{% static 'images/livros_midia.jpg' %}" class="card-img-top" alt="Livros e Mídia">
+                <img src="{% static 'images/livros.jpg' %}" class="card-img-top" alt="Livros e Mídia">
                 <div class="card-body text-center">
                     <h5 class="card-title">Livros e Mídia</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Cuidados Pessoais e Saúde -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='cuidados-pessoais-e-saude' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/cuidados_pessoais_saude.jpg' %}" class="card-img-top" alt="Cuidados Pessoais e Saúde">
                 <div class="card-body text-center">
                     <h5 class="card-title">Cuidados Pessoais e Saúde</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Pet Shop -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='pet-shop' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/pet_shop.jpg' %}" class="card-img-top" alt="Pet Shop">
                 <div class="card-body text-center">
                     <h5 class="card-title">Pet Shop</h5>
                 </div>
             </div>
+            </a>
         </div>
 
         <!-- Categoria: Jogos e Consoles -->
         <div class="col-md-4">
+            <a href="{% url 'lista_produtos_categoria' categoria_nome='jogos-e-consoles' %}">
             <div class="card category-card mb-4 shadow-lg">
                 <img src="{% static 'images/jogos_consoles.jpg' %}" class="card-img-top" alt="Jogos e Consoles">
                 <div class="card-body text-center">
                     <h5 class="card-title">Jogos e Consoles</h5>
                 </div>
             </div>
+            </a>
         </div>
     </div>
 </div>

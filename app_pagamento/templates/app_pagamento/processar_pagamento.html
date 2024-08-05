@@ -13,11 +13,6 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
-                </li>
-            </ul>
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -47,7 +42,7 @@
     <div class="container mt-5">
         <h1>Processar Pagamento</h1>
         <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
-        <p><strong>Total do Pedido:</strong> {{ pedido.calcular_total|floatformat:2 }}</p>
+        <p><strong>Total do Pedido:</strong> {{ pedido.calcular_total }}</p>
 
         <form method="post" action="{% url 'processar_pagamento' pedido.id %}">
             {% csrf_token %}

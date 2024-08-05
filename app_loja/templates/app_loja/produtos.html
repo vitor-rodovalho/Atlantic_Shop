@@ -1,0 +1,26 @@
+{% extends 'app_loja/base.html' %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2 class="mb-4 product-title">Produtos Disponíveis</h2>
+</div>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="row">
+            {% for produto in produtos %}
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" class="product-img">
+                        <div class="product-info">
+                            <h5 class="product-name">{{ produto.nome }}</h5>
+                            <p class="product-price">R$ {{ produto.preco }}</p>
+                            <a href="{% url 'detalhe_produto' produto.id %}" class="btn btn-primary">Ver Detalhes</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

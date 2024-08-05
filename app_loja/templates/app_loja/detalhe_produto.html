@@ -3,15 +3,22 @@
 {% block title %}Detalhe do Produto{% endblock %}
 
 {% block content %}
-    <h2>{{ produto.nome }}</h2>
-    <p><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></p>
-    <p>Preço: {{ produto.preco|floatformat:2 }}</p>
+<div class="product-detail-container">
+    <div class="product-header">
+        <h2>{{ produto.nome }}</h2>
+        <div class="product-img-wrapper">
+            <img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" class="product-img">
+        </div>
+    </div>
+    <p class="product-description">{{ produto.descricao }}</p>
+    <p class="price">Preço: R$ {{ produto.preco }}</p>
     <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}">
         {% csrf_token %}
         <div class="form-group">
             <label for="quantidade">Quantidade:</label>
-            <input type="number" class="form-control" name="quantidade" id="quantidade" value="1">
+            <input type="number" class="form-control" name="quantidade" id="quantidade" value="1" min="1">
         </div>
         <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
     </form>
+</div>
 {% endblock %}
