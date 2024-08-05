@@ -1,32 +1,26 @@
 {% extends 'app_loja/base.html' %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>Produtos Carregados</h2>
-
+<div class="container mt-5 text-center">
+    <h2 class="mb-4 product-title">Produtos Disponíveis</h2>
+</div>
         {% if error %}
             <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
-        <table class="table table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Imagem</th>
-                    <th>Preço</th>
-                    <th>Categoria</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for produto in produtos %}
-                    <tr>
-                        <td><a href="{% url 'detalhe_produto' produto.id %}">{{ produto.nome }}</a></td>
-                        <td><img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" style="width: 100px;"></td>
-                        <td>R$ {{ produto.preco }}</td>
-                        <td>{{ produto.categoria }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="row">
+            {% for produto in produtos %}
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="{{ produto.imgUrl }}" alt="{{ produto.nome }}" class="product-img">
+                        <div class="product-info">
+                            <h5 class="product-name">{{ produto.nome }}</h5>
+                            <p class="product-price">R$ {{ produto.preco }}</p>
+                            <a href="{% url 'detalhe_produto' produto.id %}" class="btn btn-primary">Ver Detalhes</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

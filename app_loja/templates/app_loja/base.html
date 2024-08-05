@@ -8,45 +8,31 @@
     <title>{% block title %}Atlantic Shop{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <style>
-        /* Navbar */
-        .navbar-nav .nav-link {
-            margin-right: 20px;
-        }
-        .navbar-brand {
-            margin-right: 50px;
-        }
-        .navbar-nav .form-inline {
-            margin-top: 0.5rem;
-        }
-
-        /* Barra de Pesquisa */
-        .search-bar {
-            display: none; /* Escondido na barra de navegação para o layout atual */
-        }
-    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'images/logo.png' %}" alt="Atlantic Shop Logo">
+        </a>
+            
         <a class="navbar-brand" href="/">Atlantic Shop</a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lista_produtos' %}">Produtos</a>
-                </li>
-                <li class="nav-item">
-                
-            </ul>
-            <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'lista_produtos' %}">
-                <input class="form-control mr-sm-2" type="search" name="q" placeholder="Pesquisar produtos..." aria-label="Pesquisar">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">
-                    <i class="bi bi-search"></i> Pesquisar
-                </button>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'resultado_produto' %}">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="query" placeholder="Pesquisar produtos..." aria-label="Pesquisar">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-custom-size" type="submit">Pesquisar</button>
+                    </div>
+                </div>
             </form>
-            <ul class="navbar-nav ml-auto">
+            
+            
+            <ul class="navbar-nav ml-auto align-items-center">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'visualizar_cliente' %}">Cliente</a>
@@ -61,11 +47,11 @@
                         </form>
                     </li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="btn btn-success my-2 my-sm-0" href="{% url 'login' %}">Entrar</a>
+                    <li class="nav-item mr-2">
+                        <a class="btn btn-success" href="{% url 'login' %}">Entrar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary my-2 my-sm-0" href="{% url 'cadastro_cliente' %}">Cadastrar</a>
+                        <a class="btn btn-primary" href="{% url 'cadastro_cliente' %}">Cadastrar</a>
                     </li>
                 {% endif %}
             </ul>
@@ -76,6 +62,50 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    <div class="page-container">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <!-- Barra de navegação -->
+        </nav>
+
+        <div class="content-wrap container mt-4">
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Atlantic Shop</h5>
+                        <p>Endereço: Instituto de Informática, UFG<br>
+                        Telefone: 4002-8922<br>
+                        E-mail: atlantic.shop.ufg@gmail.com</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Links Úteis</h5>
+                        <div class="footer-links">
+                            <a href="#">Política de Privacidade</a>
+                            <a href="#">Sobre Nós</a>
+                            <a href="#">Contato</a>
+                            <a href="#">Termos de Serviço</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Siga-nos</h5>
+                        <div class="footer-links">
+                            <a href="#">Instagram</a>
+                            <a href="#">Twitter</a>
+                            <a href="#">Youtube</a>
+                            <a href="#">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <p>&copy; 2024 Atlantic Shop. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

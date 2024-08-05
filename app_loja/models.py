@@ -1,4 +1,3 @@
-# Classes e métodos __str__, cálculo de valor total, 
 
 from django.db import models
 from datetime import date
@@ -8,12 +7,15 @@ from app_cliente.models import Cliente
 class Produto(models.Model):
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100)
-    imgUrl = models.URLField(max_length=200, default='')  # URL da imagem
-    preco = models.FloatField()  
-    subcategoria = models.CharField(max_length=100, default = None) 
+    imgUrl = models.URLField(max_length=200)  # URL da imagem
+    preco = models.DecimalField(max_digits=10, decimal_places=2)
+    subcategoria = models.CharField(max_length=100) 
 
     def __str__(self):
         return self.nome
+    
+    class Meta:
+        db_table = 'Produto'
 
 class Item(models.Model):
     id = models.AutoField(primary_key=True)
