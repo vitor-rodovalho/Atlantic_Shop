@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import PagamentoForm
 from .models import Pagamento
-from app_loja.models import Pedido, Produto
+from app_loja.models import Pedido
 
 @login_required
 def processar_pagamento(request, pedido_id):

@@ -1,0 +1,49 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+### Ambientes Virtuais ###
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+### Bancos de Dados ###
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+
+### IDEs e Editores ###
+.vscode/
+.idea/
+*.swp
+*.swo
+
+### Google Cloud / Segurança ###
+# Ignora arquivos de credenciais JSON
+*.json
+# Exceto o arquivo produtos.json
+!produtos.json 

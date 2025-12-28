@@ -1,57 +1,122 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from app_loja import models
-from django.contrib.auth.decorators import login_required
-from vertexai.generative_models import GenerativeModel
-from django.contrib import messages
 import vertexai
-import sqlite3
-from app_loja.models import Produto
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.conf import settings
+from vertexai.generative_models import GenerativeModel
 
-CAMINHO_DB = ''
-PROJECT_ID = ''
-LOCATION = ''
-MODEL_ID = ''
+from app_loja import models
+from app_loja.constants import CATEGORIAS
 
-produtos_cache = []
+
+PROJECT_ID = settings.VERTEX_PROJECT_ID
+LOCATION = settings.VERTEX_LOCATION
+MODEL_ID = settings.VERTEX_MODEL_ID
+
+# Cache global simples
+produtos_cache = None
+
+def get_produtos_list():
+    """Busca ID, Nome e Subcategoria via Django ORM."""
+    global produtos_cache
+    if produtos_cache is None:
+        # values_list é mais performático para prompts de IA
+        produtos_cache = list(models.Produto.objects.values_list('id', 'nome', 'subcategoria'))
+    return produtos_cache
+
+def generate(input_usuario: str):
+    """Integração com Vertex AI para busca semântica."""
+    try:
+        vertexai.init(project=PROJECT_ID, location=LOCATION)
+        model = GenerativeModel(MODEL_ID)
+        
+        produtos = get_produtos_list()
+        
+        prompt = f"""
+        Com base na pesquisa do usuário, identifique o produto mais semelhante.
+        Retorne APENAS o ID e a subcategoria no formato: ID, SUBCATEGORIA.
+        
+        Produtos: {produtos}
+        Busca: {input_usuario}
+        """
+
+        response = model.generate_content(
+            prompt,
+            generation_config={"max_output_tokens": 50, "temperature": 0.2}
+        )
+
+        if response.text:
+            partes = response.text.split(',')
+            if len(partes) >= 2:
+                return partes[0].strip(), partes[1].strip()
+    except Exception as e:
+        print(f"Erro Vertex AI: {e}")
+    return None, None
+
+# --- Views de Visualização ---
 
 def lista_categorias(request):
-    
-    context = {
-        'categorias': categorias
-    }
-    
-    return render(request, 'app_loja/lista_categorias.html', context)
+    return render(request, 'app_loja/lista_categorias.html', {'categorias': CATEGORIAS})
 
 def lista_produtos(request, categoria_nome):
-    subcategoria_lista = []
-    for categoria, subcategorias in categorias:
-        if categoria == categoria_nome:
-            subcategoria_lista = subcategorias
-            break
-
-    # Filtra os produtos que pertencem às subcategorias
-    produtos = models.Produto.objects.filter(subcategoria__in=subcategoria_lista)
-    
-    # Renderizar o template com os produtos filtrados
-    return render(request, 'app_loja/produtos.html', {'produtos': produtos, 'categoria_nome': categoria_nome})
+    subcategorias = next((subs for cat, subs in CATEGORIAS if cat == categoria_nome), [])
+    produtos = models.Produto.objects.filter(subcategoria__in=subcategorias)
+    return render(request, 'app_loja/produtos.html', {
+        'produtos': produtos, 
+        'categoria_nome': categoria_nome
+    })
 
 def detalhe_produto(request, id):
-    produto = get_object_or_404( models.Produto, id = id)
+    produto = get_object_or_404(models.Produto, id=id)
     return render(request, 'app_loja/detalhe_produto.html', {'produto': produto})
+
+# --- Busca por IA ---
+
+def resultado_produto(request):
+    query = request.GET.get('query', '')
+    if not query:
+        messages.error(request, "Por favor, digite algo para buscar.")
+        return redirect('categorias')
+
+    p_id, _ = generate(query)
+    
+    if p_id:
+        produto = models.Produto.objects.filter(id=p_id).first()
+        if produto:
+            # Recomendações: mesma subcategoria, excluindo o atual, em ordem aleatória
+            similares = models.Produto.objects.filter(
+                subcategoria=produto.subcategoria
+            ).exclude(id=produto.id).order_by('?')[:6]
+
+            return render(request, 'app_loja/resultado_produto.html', {
+                'produto_selecionado': produto,
+                'produtos_similares': similares
+            })
+
+    messages.error(request, "Nenhum produto correspondente encontrado.")
+    return redirect('categorias')
+
+# --- Fluxo de Carrinho ---
 
 @login_required
 def adicionar_ao_carrinho(request, id):
-    produto = get_object_or_404( models.Produto, id = id)
+    produto = get_object_or_404(models.Produto, id=id)
     quantidade = int(request.POST.get('quantidade', 1))
-    preco_unitario = produto.preco
 
-    item =  models.Item(produto = produto, quantidade = quantidade, preco_unitario = preco_unitario)
-    item.save()
+    # Cria o item do pedido
+    item = models.Item.objects.create(
+        produto=produto, 
+        quantidade=quantidade, 
+        preco_unitario=produto.preco
+    )
 
-    pedido, created =  models.Pedido.objects.get_or_create(cliente = request.user.cliente, status = 'Aberto')
+    # Associa ao pedido aberto do cliente
+    pedido, _ = models.Pedido.objects.get_or_create(
+        cliente=request.user.cliente, 
+        status='Aberto'
+    )
     pedido.itens.add(item)
-    pedido.save()
-
+    
     return redirect('ver_carrinho')
 
 @login_required
@@ -63,310 +128,5 @@ def ver_carrinho(request):
 def finalizar_compra(request):
     pedido = models.Pedido.objects.filter(cliente=request.user.cliente, status='Aberto').first()
     if pedido:
-        return redirect('processar_pagamento', pedido_id=pedido.id)  # Redirecionar para a view processar_pagamento com pedido_id
-    else:
-        return redirect('ver_carrinho')
-    
-
-def busca_produtos_db():
-    db_nome = CAMINHO_DB
-    conexao_db = sqlite3.connect(db_nome)
-
-    global produtos_cache
-
-    # Se os produtos já tiverem sido buscados no banco de dados, os retorna
-    if produtos_cache:
-        return produtos_cache
-
-    cursor = conexao_db.cursor()
-
-    # Consulta SQL para buscar todos produtos
-    query = "SELECT id, nome, subcategoria FROM Produto"
-    cursor.execute(query)
-    produtos = cursor.fetchall()
-
-    conexao_db.close()
-
-    produtos_cache = produtos
-    return produtos_cache
-
-def generate(input_usuario: str):
-    
-    generation_config = {
-        "max_output_tokens": 35,
-        "temperature": 1,
-        "top_p": 0.7,
-    }
-
-    produtos = busca_produtos_db()
-
-    prompt = f"""Dada uma pesquisa de produto que informa o nome ou característica dele, me retorne, separado por virgula, apenas o ID e a subcategoria do produto que mais se assemelha à pesquisa do input, sem qualquer informação adicional. Por favor, preste atenção ao contexto.
-    
-    Os produtos estão separados no formato (ID, nome, subcategoria) e são os seguintes:
-    {produtos}
-        
-    Exemplo de busca: {input_usuario}"""
-
-    # Inicializa o cliente do Vertex AI
-    vertexai.init(project=PROJECT_ID, location=LOCATION)
-    
-    # Cria uma instância do modelo
-    model = GenerativeModel(MODEL_ID)
-    
-    # Gera o conteúdo com o modelo
-    resposta = model.generate_content(
-        [prompt],
-        generation_config=generation_config,
-        stream = False,
-    )
-
-    if resposta:
-        resposta = resposta.text.split(',')
-        produto_selecionado_ID = resposta[0].strip()
-        produto_selecionado_Subcategoria = resposta[1].strip()
-        return produto_selecionado_ID, produto_selecionado_Subcategoria
-    
-    return None, None
-
-def resultado_produto(request):
-    input_usuario = request.GET.get('query', '')
-
-    if input_usuario:
-        produto_selecionado_ID, produto_selecionado_Subcategoria = generate(input_usuario)
-        
-        # Busca o produto no banco de dados conforme o ID
-        if produto_selecionado_ID:
-            conexao_db = sqlite3.connect('db.sqlite3')
-            cursor = conexao_db.cursor()
-            query_produto = "SELECT id, nome, preco, imgUrl, subcategoria FROM Produto WHERE id = ?"
-            cursor.execute(query_produto, (produto_selecionado_ID,))
-            produto_selecionado_data = cursor.fetchone()
-            conexao_db.close()
-
-            if produto_selecionado_data:
-                produto_selecionado = Produto(
-                    id=produto_selecionado_data[0],
-                    nome=produto_selecionado_data[1],
-                    preco=produto_selecionado_data[2],
-                    imgUrl=produto_selecionado_data[3],
-                    subcategoria=produto_selecionado_data[4]
-                )
-            
-                # Busca produtos da mesma subcategoria para serem recomendados
-                conexao_db = sqlite3.connect('db.sqlite3')
-                cursor = conexao_db.cursor()
-                query_similares = "SELECT id, nome, preco, imgUrl, subcategoria FROM Produto WHERE subcategoria = ? AND id != ? ORDER BY RANDOM() LIMIT 6"
-                cursor.execute(query_similares, (produto_selecionado.subcategoria, produto_selecionado.id))
-                produtos_similares_data = cursor.fetchall()   
-                conexao_db.close()
-
-                produtos_similares = [
-                    Produto(
-                        id=produto[0],
-                        nome=produto[1],
-                        preco=produto[2],
-                        imgUrl=produto[3],
-                        subcategoria=produto[4]
-                    )
-                    for produto in produtos_similares_data
-                ]
-
-                context = {
-                    'produto_selecionado': produto_selecionado,
-                    'produtos_similares': produtos_similares,
-                }
-
-                return render(request, 'app_loja/resultado_produto.html', context)
-            
-        messages.error(request, "Nenhum produto encontrado.")
-        return redirect('categorias')
-    
-    messages.error(request, "Nenhuma consulta recebida.")
-    return redirect('categorias')
-
-
-categorias = [
-    ("acessorios-e-artigos", [
-        "Acessórios de Ferramentas Elétricas",
-        "Acessórios e Artigos Eletrônicos",
-        "Acessórios e Peças para Motos",
-        "Acessórios para Celular",
-        "Acessórios para Computador",
-        "Acessórios para Gatos",
-        "Acessórios para Home Theater",
-        "Acessórios para Viagem",
-        "Carregadores de Celular",
-        "Drones e Acessórios",
-        "Impressoras e Acessórios",
-        "Jogos e Acessórios",
-        "Peças e Acessórios para Automóveis",
-        "Peças e Componentes de Computador",
-        "Produtos para Câmeras e Foto",
-        "Telefones e Acessórios"
-    ]),
-    
-    ("moda-e-acessorios-pessoais", [
-        "Achados em Moda",
-        "Beleza",
-        "Bolsas",
-        "Bolsas de Mão e Ombro Femininas",
-        "Bolsas e Mochilas Escolares",
-        "Compras Internacionais em Moda",
-        "Feminino",
-        "Maquiagem",
-        "Masculino",
-        "Meninas",
-        "Meninos",
-        "Mochilas",
-        "Moda",
-        "Moda Masculina",
-        "Roupas Íntimas para Incontinência",
-        "Roupas, Calçados e Joias"
-    ]),
-    
-    ("bebes-e-criancas", [
-        "Alimentação de Bebês e Crianças Pequenas",
-        "Banho, Higiene e Troca de Fraldas do Bebê",
-        "Bebês",
-        "Chupetas e Mordedores",
-        "Diversão e Atividades para Bebês",
-        "Papinhas de Bebê",
-        "Produtos de Passeio e Viagem para Bebês",
-        "Produtos para a Segurança do Bebê",
-        "Troca de Fraldas do Bebê"
-    ]),
-    
-    ("alimentos-e-bebidas", [
-        "Alimentos e Bebidas",
-        "Bebidas Alcoólicas",
-        "Café, Chá e Expresso",
-        "Café, Chá e outras Bebidas",
-        "Cereal de Café da Manhã",
-        "Cerveja",
-        "Gin",
-        "Grãos Secos, Arroz e Massas",
-        "Lanches e Doces",
-        "Molhos e Condimentos",
-        "Vodka",
-        "Whisky",
-        "Óleos, Azeites, Vinagres e Molhos para Salada"
-    ]),
-    
-    ("casa-e-cozinha", [
-        "Ar e Ventilação",
-        "Assadeiras, Fôrmas e Recipientes de Forno",
-        "Casa",
-        "Casa Inteligente",
-        "Cozinha",
-        "Cortinas e Persianas",
-        "Iluminação",
-        "Instalações de Cozinha e Banheiro",
-        "Móveis e Acessórios para Jardim e Quintal",
-        "Móveis e Decoração",
-        "Móveis para Escritório",
-        "Organização e Armazenamento para Casa",
-        "Panelas e Utensílios para Cozinhar",
-        "Produtos de Decoração para Casa",
-        "Produtos de Limpeza",
-        "Produtos de Limpeza para Casa",
-        "Talheres",
-        "Utensílios de Cozinha",
-        "Utensílios de Limpeza"
-    ]),
-    
-    ("ferramentas-e-equipamentos", [
-        "Ferramentas Elétricas",
-        "Ferramentas Manuais",
-        "Ferramentas de Medição",
-        "Ferramentas e Equipamentos Automotivos",
-        "Ferramentas e Materiais de Construção",
-        "Organizador de Ferramentas"
-    ]),
-    
-    ("esporte-e-lazer", [
-        "Automotivo",
-        "Bonecas e Acessórios",
-        "Brinquedos de Construir e de Montar",
-        "Brinquedos e Jogos",
-        "Brinquedos para Faz de Conta e Casinha",
-        "Colecionáveis e Miniaturas para Hobby",
-        "Esportes com Raquete",
-        "Esportes e Aventura",
-        "Esportes e Brincadeiras ao Ar Livre",
-        "Equipamento de Ciclismo",
-        "Equipamento de Natação",
-        "Equipamento para Exercícios e Academia",
-        "Equipamento para Trilha e Acampamento",
-        "Jardinagem, Ferramentas e Rega para Jardim",
-        "Material de Futebol",
-        "Skates, Patins, Patinetes e Acessórios"
-    ]),
-    
-    ("eletronicos-e-tecnologia", [
-        "Celulares e Comunicação",
-        "Celulares e Smartphones",
-        "Computadores Desktop",
-        "Computadores e Informática",
-        "Eletrônicos",
-        "Eletrônicos e Aparelhos",
-        "Eletrônicos e Tecnologia Automotivos",
-        "Eletrônicos e Tecnologia para Escritório",
-        "Equipamento Elétrico",
-        "Fire TV Stick Apps",
-        "Fragmentadoras",
-        "Memória e Armazenamento de Dados",
-        "Monitores de Computador",
-        "Notebooks",
-        "Roteadores, Modems e Dispositivos de Rede",
-        "Tablets",
-        "Wearables e Tecnologia Vestível"
-    ]),
-    
-    ("livros-e-midia", [
-        "Apps e Jogos",
-        "Audiolivros Audible",
-        "CD e Vinil",
-        "Didáticos e Escolares",
-        "Filmes",
-        "HQs, Mangás e Graphic Novels",
-        "Livros",
-        "Livros Infantis",
-        "Livros Universitários, Técnicos e Profissionais",
-        "Livros em Oferta",
-        "Loja Kindle",
-        "Música Nacional",
-        "Programas de TV",
-        "eBooks Gratuitos",
-        "eBooks Kindle"
-    ]),
-    
-    ("cuidados-pessoais-e-saude", [
-        "Desodorantes e Antitranspirantes",
-        "Produtos de Bem-Estar Sexual",
-        "Produtos de Corpo e Banho",
-        "Produtos de Cuidados com a Pele",
-        "Produtos de Higiene Bucal",
-        "Produtos de Manicure e Pedicure",
-        "Produtos de Proteção do Sol e Bronzeadores",
-        "Produtos para Cuidados com o Rosto",
-        "Saúde e Cuidados Pessoais",
-        "Vitaminas, Minerais e Suplementos"
-    ]),
-    
-    ("pet-shop", [
-        "Acessórios para Gatos",
-        "Produtos para Aves e Pássaros",
-        "Produtos para Cães",
-        "Produtos para Roedores e Pequenos Animais",
-        "Produtos para Répteis e Anfíbios",
-        "Peixes e Animais Aquáticos"
-    ]),
-    
-    ("jogos-e-consoles", [
-        "Nintendo Switch, Jogos, Consoles e Acessórios",
-        "PlayStation 4, Jogos, Consoles e Acessórios",
-        "PlayStation 5, Jogos, Consoles e Acessórios",
-        "Xbox One, Jogos, Consoles e Acessórios",
-        "Xbox Series X e S, Jogos, Consoles e Acessórios"
-    ])
-]
+        return redirect('processar_pagamento', pedido_id=pedido.id)
+    return redirect('ver_carrinho')
